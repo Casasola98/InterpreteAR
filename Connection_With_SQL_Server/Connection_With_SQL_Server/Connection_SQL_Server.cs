@@ -128,6 +128,75 @@ namespace Connection_With_SQL_Server
             }
         }
 
-    
+        public int GetQuantityAttribute(string tableName)
+        {
+            int numAttributes = 0;
+            if (this.ExistTable(tableName))
+            {
+                SqlConnection cn = new SqlConnection(ConnectionString);
+                try
+                {
+                    cn.Open();
+                    SqlCommand cm = new SqlCommand(string.Format("select count(*) from sysobjects, syscolumns where sysobjects.id = syscolumns.id and sysobjects.name = {0}", tableName));
+                    cm.CommandType = System.Data.CommandType.Text;
+                    cm.Connection = cn;
+                    numAttributes = (int)(cm.ExecuteScalar());
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    if (cn.State == System.Data.ConnectionState.Open)
+                    {
+                        cn.Close();
+                    }
+                }
+            }
+            return numAttributes;
+        }
+
+        public List<Dictionary<int, object>> ExecuteTablesDates()
+        {
+
+            List<Dictionary<int, object>> resultado = new List<Dictionary<int, object>>();
+
+            SqlConnection cn = new SqlConnection(ConnectionString);
+            try
+            {
+                cn.Open();
+                SqlCommand cm = new SqlCommand("SELECT o.Name as Table_Name, c.Name as Field_Name, t.Name as Data_Type FROM syscolumns c INNER JOIN sysobjects o ON o.id = c.id LEFT JOIN  systypes t on t.xtype = c.xtype WHERE o.type = 'U' ORDER BY o.Name, c.Name");
+                cm.CommandType = System.Data.CommandType.Text;
+                cm.Connection = cn;
+
+                SqlDataReader dr = cm.ExecuteReader();
+                while (dr.Read())
+                {
+                    Dictionary<int, object> fila = new Dictionary<int, object>();
+
+                    for (int i = 0; i < dr.FieldCount; i++)
+                    {
+                        fila.Add(i, dr[i]);
+                    }
+
+                    resultado.Add(fila);
+                }
+                dr.Close();
+
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (cn.State == System.Data.ConnectionState.Open)
+                {
+                    cn.Close();
+                }
+            }
+        }
     }
 }
