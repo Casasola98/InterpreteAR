@@ -13,7 +13,14 @@ namespace Connection_With_SQL_Server
             try
             {
                 Connection_SQL_Server db = new Connection_SQL_Server(".\\SQLExpress", "Ventas", "", "");
-                db.DropTable("x");
+                if (db.TestConnection())
+                {
+                    Console.WriteLine("Conexión realizada");
+                }
+                else
+                {
+                    Console.WriteLine("Conexión fallida");
+                }
                 if (db.ExistTable("cantones"))
                 {
                     List<string> columns = null;
@@ -41,22 +48,37 @@ namespace Connection_With_SQL_Server
                 {
                     Console.WriteLine("Tabla no existe");
                 }
-                
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                
+
             }
-            
+
+            try
+            {
+                Connection_SQL_Server db = new Connection_SQL_Server(".\\SQLExpress", "Ventas", "", "");
+
+                List<Dictionary<int, object>> datos = db.ExecuteTablesDates();
+
+                foreach (var fila in datos)
+                {
+                    foreach (var campo in fila.Values)
+                    {
+                        Console.Write(campo.ToString());
+                        Console.Write("\t");
+                    }
+                    Console.WriteLine("");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+
+            }
 
             Console.ReadLine();
-
-            //Console.WriteLine("Hello World");
-            //string x = Console.ReadLine();
-            //Console.WriteLine(x);
-            //Console.WriteLine("Press any key to exit.");
-            //Console.ReadKey();
             return 0;
         }
     }

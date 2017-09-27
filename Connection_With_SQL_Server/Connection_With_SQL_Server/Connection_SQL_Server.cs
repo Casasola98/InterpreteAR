@@ -28,13 +28,32 @@ namespace Connection_With_SQL_Server
             {
                 if (string.IsNullOrEmpty(userId) || userId.Trim().Equals(string.Empty))
                 {
-                    return string.Format("Data Source={0};Initial Catalog={1};Integrated Security=yes", server, dataBase);
+                    return string.Format("Data Source={0}; Initial Catalog={1};Integrated Security=yes", server, dataBase);
                 }
                 else
                 {
-                    return string.Format("Data Source={0};Initial Catalog={1};User ID={2};Pwd={3}", server, dataBase, userId, password);
+                    return string.Format("Data Source={0}; Initial Catalog={1};User ID={2};Pwd={3}", server, dataBase, userId, password);
                 }
                 
+            }
+        }
+
+        public bool TestConnection()
+        {
+            try
+            {
+                SqlConnection cn = new SqlConnection(ConnectionString);
+                cn.Open();
+                if (cn != null)
+                {
+                    cn.Close();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
 
